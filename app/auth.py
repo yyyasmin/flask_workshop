@@ -15,17 +15,18 @@ def index():
 @auth.route('/register', methods=['POST'])
 def register():
     print("")
-    print("IN register - request.method:", request.method)
+    print("XXX - IN register - request.method:", request.method)
 
     data = request.get_json()
     print("IN register - data:", data)
 
     email = data.get('email')
     name = data.get('name')
-    password = data.get('password')
+    #password = data.get('password')
     
-    if not email or not name or not password:
-        return jsonify({'error': 'Missing required fields'}), 400
+    #if not email or not name or not password:
+    if not email or not name:
+        return jsonify({'error': '111 - Missing required fields'}), 400
         
     existing_user = User.query.filter_by(email=email).first()
     print("existing_user: ", existing_user)
@@ -34,7 +35,11 @@ def register():
         return jsonify({'error': 'User already exists'}), 400
 
     user = User(email=email, name=name)
-    user.set_password(password)
+
+    # Fake password: use email as password temporarily
+    user.set_password(email)
+
+    #user.set_password(password)
     db.session.add(user)
     db.session.commit()
 
