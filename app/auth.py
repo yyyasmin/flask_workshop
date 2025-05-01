@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify
 from app import db
-from app.models import User
+from app.models import *
 from pdb import set_trace as sstt
+from pprint import pprint
 
 auth = Blueprint('auth', __name__)
 
@@ -22,26 +23,35 @@ def register():
 
     email = data.get('email')
     name = data.get('name')
-    #password = data.get('password')
+    age_group_name = data.get('age')  # e.g., "16-18"
     
-    #if not email or not name or not password:
-    if not email or not name:
-        return jsonify({'error': '111 - Missing required fields'}), 400
-        
+
+    if not email or not name or not age_group_name:
+        return jsonify({'error': 'Missing required fields'}), 400
+
     existing_user = User.query.filter_by(email=email).first()
     print("existing_user: ", existing_user)
+    
+    sstt()
 
     if existing_user:
         return jsonify({'error': 'User already exists'}), 400
+    # Try to find existing age group
+    age_group = AgeGroup.query.filter_by(name=age_group_name).first()
+    if not age_group:
+        # If not found, create it
+        age_group = AgeGroup(name=age_group_name)
+        db.session.add(age_group)
+        db.session.commit()  # commit now to get the id for user
 
-    user = User(email=email, name=name)
+    # Create new user
+    user = User(email=email, name=name, age_group_id=age_group.id)
+    user.set_password(email)  # Temp password = email
 
-    # Fake password: use email as password temporarily
-    user.set_password(email)
-
-    #user.set_password(password)
     db.session.add(user)
     db.session.commit()
+    
+    user.ppp()
 
     return jsonify({'message': 'User registered successfully'}), 201
 

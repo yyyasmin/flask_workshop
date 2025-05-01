@@ -7,6 +7,8 @@ class User(db.Model):
     __tablename__ = 'users'  # Use plural form to avoid reserved keyword conflict
 
     id = db.Column(db.Integer, primary_key=True)
+    age_group_id = db.Column(db.Integer, db.ForeignKey('age_groups.id'))
+
     name = db.Column(db.String(500))
     email = db.Column(db.String(500), unique=True, nullable=False)
     password_hash = db.Column(db.String(500), nullable=False)
@@ -16,13 +18,19 @@ class User(db.Model):
         
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+        
+    def ppp(self):
+        print("\n--- User Profile ---")
+        print(f"ID: {self.id}")
+        print(f"Name: {self.name}")
+        print(f"Email: {self.email}")
+        print(f"Age Group ID: {self.age_group_id}")
 
 class Order(db.Model):
     __tablename__ = 'orders'  # Use plural form to avoid reserved keyword conflict
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    age_group_id = db.Column(db.Integer, db.ForeignKey('age_groups.id'))
     subject_id = db.Column(db.Integer, db.ForeignKey('subjects.id'))
     skill_level_id = db.Column(db.Integer, db.ForeignKey('skill_levels.id'))
 
