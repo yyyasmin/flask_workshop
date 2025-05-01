@@ -32,8 +32,6 @@ def register():
     existing_user = User.query.filter_by(email=email).first()
     print("existing_user: ", existing_user)
     
-    sstt()
-
     if existing_user:
         return jsonify({'error': 'User already exists'}), 400
     # Try to find existing age group
@@ -111,7 +109,6 @@ def signup():
             user = User(email=email, name=name)
             user.set_password(password)
             db.session.add(user)
-            sstt()
             db.session.commit()
 
             return jsonify({'message': 'User signed up successfully'}), 201
